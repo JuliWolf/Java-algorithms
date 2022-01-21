@@ -1,4 +1,4 @@
-package Lesson_2.sort;
+package Lesson_2.Homework.sort;
 
 public class SelectionSort {
     public static void sort(Integer[] arr) {
