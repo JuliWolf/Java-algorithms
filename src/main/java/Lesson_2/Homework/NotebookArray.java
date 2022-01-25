@@ -1,8 +1,8 @@
-package Lesson_2;
+package Lesson_2.Homework;
 
 import java.util.Random;
 
-import Lesson_2.notebook.NoteBook;
+import Lesson_2.Homework.notebook.NoteBook;
 
 public class NotebookArray {
     public static boolean isShuffle = false;

@@ -1,4 +1,4 @@
-package Lesson_2.notebook;
+package Lesson_2.Homework.notebook;
 
 public class NoteBook {
     private final int price;

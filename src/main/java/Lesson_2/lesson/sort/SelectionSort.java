@@ -2,33 +2,19 @@ package Lesson_2.lesson.sort;
 
 public class SelectionSort {
     public static void sort(Integer[] arr) {
-        int limit = arr.length;
-
-        for (int i = 0; i < limit - 1; i++) {
+        for (int i = 0; i < arr.length - 1; i++) {
             int min = i;
-            int max = i;
 
-            for (int j = min + 1; j < limit; j++) {
+            for (int j = min + 1; j < arr.length; j++) {
                 if (arr[j] < arr[min]) {
                     min = j;
                 }
-
-                if (arr[j] > arr[max]) {
-                    max = j;
-                }
             }
 
-            swapArrayElements(arr, i, min);
-            if (i != max) {
-                swapArrayElements(arr, limit - 1, max);
-                limit--;
-            }
+            int temp = arr[i];
+            arr[i] = arr[min];
+            arr[min] = temp;
+
         }
-    }
-
-    public static void swapArrayElements (Integer[] arr, int i, int j) {
-        int temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
     }
 }

@@ -1,13 +1,11 @@
-package Lesson_2;
+package Lesson_2.Homework;
 
-import Lesson_2.notebook.NoteBook;
-import Lesson_2.sort.NotebookSort;
-import Lesson_2.sort.SelectionSort;
+import Lesson_2.Homework.notebook.NoteBook;
+import Lesson_2.Homework.sort.NotebookSort;
 
 import Lesson_2.lesson.MyArray;
 import Lesson_2.lesson.SpeedTest;
-
-import java.util.Arrays;
+import Lesson_2.lesson.sort.SelectionSort;
 
 public class Main {
     public static void main(String[] args) {

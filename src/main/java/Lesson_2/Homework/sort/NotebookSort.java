@@ -1,8 +1,6 @@
-package Lesson_2.sort;
+package Lesson_2.Homework.sort;
 
-import Lesson_2.notebook.NoteBook;
-
-import java.util.Arrays;
+import Lesson_2.Homework.notebook.NoteBook;
 
 public class NotebookSort {
     public enum Producers {
