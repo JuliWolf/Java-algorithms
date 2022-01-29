@@ -109,10 +109,29 @@ public class SimpleLinkedListImpl<E> implements LinkedList<E>, Iterable<E> {
         return first.item;
     }
 
+
     @Override
     public Iterator<E> iterator() {
-        return null; /*new ListIterator<E>();*/
+        return new ListIterator<E>(this);
     }
 
-    private class ListIterator<E> /*implements Iterator<E>*/ {}
+    private class ListIterator<E> implements Iterator<E> {
+        Node<E> current;
+
+        public ListIterator(SimpleLinkedListImpl<E> list)
+        {
+            current = list.first;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return current != null;
+        }
+
+        @Override
+        public E next() {
+            current = current.next;
+            return current.item;
+        }
+    }
 }
