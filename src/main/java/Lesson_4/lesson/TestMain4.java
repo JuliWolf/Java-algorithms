@@ -8,8 +8,8 @@ import java.util.List;
 public class TestMain4 {
 
     public static void main(String[] args) {
-        testLinkedList();
-//        testHomeWork();
+//        testLinkedList();
+        testHomeWork();
 //        testIterator();
     }
 
@@ -48,6 +48,16 @@ public class TestMain4 {
         //ДОЛЖНО РАБОТАТЬ!
 
         SimpleLinkedListImpl<Integer> linkedList = new SimpleLinkedListImpl<>();
+
+        linkedList.insertFirst(1);
+        linkedList.insertFirst(2);
+        linkedList.insertFirst(3);
+        linkedList.insertFirst(4);
+        linkedList.insertFirst(5);
+        linkedList.insertFirst(6);
+        linkedList.insertFirst(7);
+        linkedList.insertFirst(8);
+        linkedList.display();
 
         for (Integer value : linkedList) {
             System.out.println("value: " + value);
