@@ -1,12 +1,10 @@
-package Lesson_7.lesson;
+package Lesson_7.Homework;
 
 public interface Graph {
 
     void addVertex(String label);
 
-
-    boolean addEdge(String startLabel, String secondLabel, String... others);
-    boolean addEdge(String startLabel, String secondLabel);
+    boolean addEdge(String startLabel, String secondLabel, int width);
 
     int getSize();
 
@@ -21,5 +19,9 @@ public interface Graph {
      * англ. breadth-first search, BFS
      */
     void bfs(String startLabel);
+
+    void findShortestWay(String startLabel, String endLabel);
+
+    void clean();
 
 }

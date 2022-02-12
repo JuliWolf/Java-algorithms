@@ -2,17 +2,33 @@ package Lesson_7.Homework;
 
 import Lesson_7.lesson.Vertex;
 
-import Lesson_7.lesson.Graph;
-
 import java.util.*;
 
 public class GraphImpl implements Graph {
+    private final int INFINITY = 100000000;
     private final List<Vertex> vertexList;
-    private final boolean[][] adjMatrix;
+    private final int[][] adjMatrix;
+
+    private int visitedVertexCount;
+    private int currentVertexIndex;
+    private int distToCurrentVertex;
+
+    private List<Path> shortestPaths;
 
     public GraphImpl(int maxVertexCount) {
         this.vertexList = new ArrayList<>(maxVertexCount);
-        this.adjMatrix = new boolean[maxVertexCount][maxVertexCount];
+        this.adjMatrix = new int[maxVertexCount][maxVertexCount];
+        shortestPaths = new ArrayList<>();
+
+        setDefaultValues();
+    }
+
+    private void setDefaultValues () {
+        for (int i = 0; i < adjMatrix.length; i++) {
+            for (int j = 0; j < adjMatrix.length; j++) {
+                adjMatrix[i][j] = INFINITY;
+            }
+        }
     }
 
 
@@ -22,7 +38,7 @@ public class GraphImpl implements Graph {
     }
 
     @Override
-    public boolean addEdge(String startLabel, String secondLabel) {
+    public boolean addEdge(String startLabel, String secondLabel, int width) {
         int startIndex = indexOf(startLabel);
         int endIndex = indexOf(secondLabel);
 
@@ -30,7 +46,7 @@ public class GraphImpl implements Graph {
             return false;
         }
 
-        adjMatrix[startIndex][endIndex] = true; //!!!!!!!!!!!!
+        adjMatrix[startIndex][endIndex] = width;
 
         return true;
     }
@@ -42,17 +58,6 @@ public class GraphImpl implements Graph {
             }
         }
         return -1;
-    }
-
-    @Override
-    public boolean addEdge(String startLabel, String secondLabel, String... others) {
-        boolean result = addEdge(startLabel, secondLabel);
-
-        for (String other : others) {
-            result &= addEdge(startLabel, other);
-        }
-
-        return result;
     }
 
     @Override
@@ -72,8 +77,8 @@ public class GraphImpl implements Graph {
         for (int i = 0; i < getSize(); i++) {
             sb.append(vertexList.get(i));
             for (int j = 0; j < getSize(); j++) {
-                if (adjMatrix[i][j]) {
-                    sb.append(" -> ").append(vertexList.get(j));
+                if (adjMatrix[i][j] > 0) {
+                    sb.append(" -> ").append(adjMatrix[i][j]).append(" ").append(vertexList.get(j));
                 }
             }
             sb.append("\n");
@@ -107,7 +112,7 @@ public class GraphImpl implements Graph {
     private Vertex getNearUnvisitedVertex(Vertex vertex) {
         int currentIndex = vertexList.indexOf(vertex);
         for (int i = 0; i < getSize(); i++) {
-            if (adjMatrix[currentIndex][i] && !vertexList.get(i).isVisited() ) {
+            if (adjMatrix[currentIndex][i] > 0 && !vertexList.get(i).isVisited() ) {
                 return vertexList.get(i);
             }
         }
@@ -147,5 +152,124 @@ public class GraphImpl implements Graph {
             }
         }
         System.out.println();
+    }
+
+    @Override
+    public void findShortestWay(String startLabel, String endLabel) {
+        int startIndex = indexOf(startLabel);
+        int endIndex = indexOf(endLabel);
+        if (startIndex == -1) {
+            throw new IllegalArgumentException("Неверная вершина" + startLabel);
+        }
+
+        if (endIndex == -1) {
+            throw new IllegalArgumentException("Неверная вершина" + endIndex);
+        }
+
+        Vertex startVertex = vertexList.get(startIndex);
+
+        startVertex.setVisited(true);
+        visitedVertexCount++;
+        for (int i = 0; i < vertexList.size(); i++) {
+            int tempDist = adjMatrix[startIndex][i];
+            Path path = new Path(tempDist);
+            path.getParentVertices().add(startIndex);
+
+            if (i == endIndex) {
+                path.setAchieveTarget(true);
+            }
+
+            shortestPaths.add(path);
+        }
+
+        while (visitedVertexCount < getSize()) {
+            int indexMin = getMin();
+            int minDist = shortestPaths.get(indexMin).getDistance();
+
+            if (minDist == INFINITY) {
+                currentVertexIndex = indexMin++;
+                distToCurrentVertex = shortestPaths.get(currentVertexIndex).getDistance();
+            } else {
+                currentVertexIndex = indexMin;
+                distToCurrentVertex = minDist;
+            }
+
+            vertexList.get(currentVertexIndex).setVisited(true);
+            visitedVertexCount++;
+            updateShortestPaths(startIndex);
+        }
+
+        displayPaths();
+    }
+
+    public int getMin () {
+        int minDist = INFINITY;
+        int indexMin = 0;
+        for (int i = 1; i < getSize(); i++) {
+            int distance = shortestPaths.get(i).getDistance();
+            if (!vertexList.get(i).isVisited() && distance < minDist) {
+                minDist = distance;
+                indexMin = i;
+            }
+        }
+        return indexMin;
+    }
+
+    public void updateShortestPaths (int startIndex) {
+        int vertexIndex = startIndex + 1;
+
+        while (vertexIndex < getSize()) {
+            if (vertexList.get(vertexIndex).isVisited()) {
+                vertexIndex++;
+                continue;
+            }
+
+            int currentToVertex = adjMatrix[currentVertexIndex][vertexIndex];
+
+            int startToVertex = distToCurrentVertex + currentToVertex;
+
+            int shortPathDistance = shortestPaths.get(vertexIndex).getDistance();
+
+            if (startToVertex < shortPathDistance) {
+                Path path = shortestPaths.get(vertexIndex);
+                List<Integer> newParents = new ArrayList<>(shortestPaths.get(currentVertexIndex).getParentVertices());
+                newParents.add(currentVertexIndex);
+                path.setParentVertices(newParents);
+                path.setDistance(startToVertex);
+            }
+            vertexIndex++;
+        }
+    }
+
+    private void displayPaths() {
+        for (int i = 0; i < getSize(); i++) {
+            Path path = shortestPaths.get(i);
+            if (!path.isAchieveTarget()) {
+                continue;
+            }
+
+            System.out.print(vertexList.get(i).getLabel() + " = ");
+
+            if (path.getDistance() == INFINITY) {
+                System.out.println("0");
+            } else {
+                String result = shortestPaths.get(i).getDistance() + " (";
+                List<Integer> parents = shortestPaths.get(i).getParentVertices();
+                for (int j = 0; j < parents.size(); j++) {
+                    result += vertexList.get(parents.get(j)).getLabel() + " -> ";
+                }
+                System.out.println(result + vertexList.get(i).getLabel() + ")");
+            }
+        }
+    }
+
+    public void clean () {
+        visitedVertexCount = 0;
+
+        for (int i = 0; i < getSize(); i++) {
+            vertexList.get(i).setVisited(false);
+        }
+
+        shortestPaths = new ArrayList<>();
     }
 }
