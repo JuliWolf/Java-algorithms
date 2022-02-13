@@ -87,6 +87,10 @@ public class HashTableImpl<K, V> implements HashTable<K, V> {
         if (item == emptyItem) {
             return false;
         }
+
+        System.out.println(item.getKey());
+        System.out.println(key);
+        System.out.println(item.getKey().equals(key));
         return (item.getKey() == null) ? (key == null) : item.getKey().equals(key);
     }
 
