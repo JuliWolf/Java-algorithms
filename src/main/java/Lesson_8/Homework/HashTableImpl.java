@@ -1,45 +1,12 @@
 package Lesson_8.Homework;
 
-import Lesson_8.lesson.HashTable;
-
 public class HashTableImpl<K, V> implements HashTable<K, V> {
 
-    private final Item<K, V>[] data;
+    private final ItemList<K, V>[] data;
     private int size;
-    private Item<K, V> emptyItem;
-
-    static class Item<K, V> implements Entry<K, V> {
-        private final K key;
-        private V value;
-
-        public Item(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        @Override
-        public K getKey() {
-            return key;
-        }
-
-        @Override
-        public V getValue() {
-            return value;
-        }
-
-        public void setValue(V value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return "Item{" + "key=" + key + ", value=" + value + '}';
-        }
-    }
 
     public HashTableImpl(int initialCapacity) {
-        data = new Item[initialCapacity * 2];
-        emptyItem = new Item<>(null, null);
+        data = new ItemList[initialCapacity];
     }
 
     public HashTableImpl() {
@@ -55,41 +22,15 @@ public class HashTableImpl<K, V> implements HashTable<K, V> {
         int index = hashFunc(key);
         int n = 0;
 
-        while (data[index] != null && data[index] != emptyItem) {
-            if (isKeysEquals(data[index], key)) {
-                data[index].setValue(value);
-                return true;
-            }
-//            index += getStepLinear();
-//            index += getStepQuadratic(n++);
-            index += getStepDoubleHash(key);
-            index %= data.length;
-
+        while (data[index] != null) {
+            data[index].setValue(key, value);
+            return true;
         }
 
-        data[index] = new Item<>(key, value);
+        data[index] = new ItemList<>(index, key, value);
         size++;
 
         return true;
-    }
-
-    private int getStepDoubleHash(K key) {
-        return 5 - (key.hashCode() % 5);
-    }
-
-    private int getStepQuadratic(int n) {
-        return (int) Math.pow(n, 2);
-    }
-
-    private int getStepLinear() {
-        return 1;
-    }
-
-    private boolean isKeysEquals(Item<K, V> item, K key) {
-        if (item == emptyItem) {
-            return false;
-        }
-        return (item.getKey() == null) ? (key == null) : item.getKey().equals(key);
     }
 
     private int hashFunc(K key) {
@@ -98,37 +39,16 @@ public class HashTableImpl<K, V> implements HashTable<K, V> {
 
     @Override
     public V get(K key) {
-        int index = indexOf(key);
-        return index == -1 ? null : data[index].getValue();
-    }
-
-    private int indexOf(K key) {
         int index = hashFunc(key);
-
-        int count = 0;
-
-        while (count++ < data.length) {
-            if (data[index] == null) {
-                break;
-            }
-            if (isKeysEquals(data[index], key)) {
-                return index;
-            }
-
-            index += getStepDoubleHash(key);
-            index %= data.length;
-        }
-        return -1;
+        return data[index].getValue(key);
     }
 
     @Override
     public V remove(K key) {
-        int index = indexOf(key);
-        if (index == -1) {
-            return null;
-        }
-        Item<K, V> removed = data[index];
-        data[index] = emptyItem;
+        int index = hashFunc(key);
+
+        Item<K, V> removed = data[index].getItem(key);
+        data[index].removeValue(key);
 
         return removed.getValue();
     }
